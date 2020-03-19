@@ -14,7 +14,7 @@
             <div class="sidebar-sticky">
                 <ul class="nav flex-column mt-5">
                     <li class="nav-item mt2">
-                        <a class="nav-link @if(request()->url() == route('admin.dashboard')) {{'active'}} @endif" href="{{ url('/admin') }}">
+                        <a class="nav-link @if(request()->url() == route('admin.dashboard')) {{'active'}} @endif" href="{{ url('/admin/dashboard') }}">
                             <span data-feather="home"></span>
                             Dashboard <span class="sr-only">(current)</span>
                         </a>

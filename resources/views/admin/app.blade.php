@@ -39,6 +39,6 @@
 
     <!-- Placed at the end of the document so the pages load faster -->
     <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
-
+    @yield('scripts')
 </body>
 </html>

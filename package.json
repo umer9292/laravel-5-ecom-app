@@ -19,6 +19,9 @@
         "popper.js": "^1.12"
     },
     "dependencies": {
-        "feather-icons": "^4.26.0"
+        "@ckeditor/ckeditor5-build-classic": "^17.0.0",
+        "feather-icons": "^4.26.0",
+        "select2": "^4.0.13",
+        "slugify": "^1.4.0"
     }
 }
