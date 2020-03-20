@@ -23,7 +23,7 @@ class Category extends Model
         return $this->belongsToMany('App\Product');
     }
 
-    public function childrens() {
+    public function subCategories() {
         return $this->belongsToMany(Category::class, 'category_parent', 'category_id', 'parent_id');
     }
 

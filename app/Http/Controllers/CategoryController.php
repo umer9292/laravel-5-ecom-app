@@ -14,7 +14,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('created_at', 'desc')->paginate(4);
         return  view('admin.categories.index', compact('categories'));
     }
 
@@ -38,12 +38,13 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|min:5',
+            'title' => 'required',
+            'description' => 'required',
             'slug' => 'required|min:5|unique:categories',
         ]);
 
         $categories = Category::create($request->only('title', 'description', 'slug'));
-        $categories->childrens()->attach($request->parent_id);
+        $categories->subCategories()->attach($request->parent_id);
         return back()->with('message', 'Category Added Successfully!');
     }
 
@@ -66,7 +67,8 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        $categories = Category::all();
+        return  view('admin.categories.edit', ['categories' => $categories, 'category' => $category]);
     }
 
     /**
@@ -78,7 +80,18 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $category->title = $request->title;
+        $category->description = $request->description;
+        $category->slug = $request->slug;
+
+
+        // detach all parent categories
+        $category->subCategories()->detach();
+        // attach selected parent categories
+        $category->subCategories()->attach($request->parent_id);
+        // save current record into database
+        $category->save();
+        return back()->with('message', 'Category Updated Successfully!');
     }
 
     /**
@@ -89,6 +102,10 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        if ($category->delete()) {
+            return back()->with('message', 'Category Deleted Successfully!');
+        } else {
+            return back()->with('error', 'Error Deleting Record!');
+        }
     }
 }

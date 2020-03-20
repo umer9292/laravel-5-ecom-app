@@ -33,8 +33,23 @@
                 </button>
             </div>
         </div>
-        @include('admin.partials.navbar')
-        @yield('content')
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            @yield('breadcrumbs')
+                        </ol>
+                    </nav>
+                </div>
+                <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                     @include('admin.partials.navbar')
+                </nav>
+                <div class="col-md-12">
+                    @yield('content')
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Placed at the end of the document so the pages load faster -->
