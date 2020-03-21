@@ -14,8 +14,20 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::orderBy('created_at', 'desc')->paginate(4);
+        $categories = Category::orderBy('created_at', 'desc')->paginate(5);
         return  view('admin.categories.index', compact('categories'));
+    }
+
+    /**
+     * Display Trashed listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function trash()
+    {
+        $categories = Category::orderBy('id', 'desc')->onlyTrashed()->paginate(5);
+//        dd($categories);
+        return  view('admin.categories.trash', compact('categories'));
     }
 
     /**
@@ -67,7 +79,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        $categories = Category::all();
+        $categories = Category::where('id', '!=', $category->id)->get();
         return  view('admin.categories.edit', ['categories' => $categories, 'category' => $category]);
     }
 
@@ -94,6 +106,15 @@ class CategoryController extends Controller
         return back()->with('message', 'Category Updated Successfully!');
     }
 
+    public function recoverCat($id)
+    {
+        $category = Category::withTrashed()->findOrFail($id);
+        if ($category->restore())
+            return back()->with('message', 'Category Successfully Restored!');
+        else
+            return back()->with('error', 'Error Restoring Category');
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -102,10 +123,25 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        if ($category->delete()) {
+        if ($category->subCategories()->detach() && $category->forceDelete()) {
             return back()->with('message', 'Category Deleted Successfully!');
         } else {
             return back()->with('error', 'Error Deleting Record!');
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Category  $category
+     * @return \Illuminate\Http\Response
+     */
+    public function remove(Category $category)
+    {
+        if ($category->delete()) {
+            return back()->with('message', 'Category Successfully Trashed!');
+        } else {
+            return back()->with('error', 'Error Trashing Record!');
         }
     }
 }

@@ -1,11 +1,11 @@
 @extends('admin.app')
 @section('breadcrumbs')
     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Categories</li>
+    <li class="breadcrumb-item active" aria-current="page">Trash Categories</li>
 @endsection
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h2 class="h2">Categories List</h2>
+        <h2 class="h2">Trashed List</h2>
         <div class="btn-toolbar mb-2 mb-md-0">
             <a href="{{ route('admin.category.create') }}" class="btn btn-sm btn-outline-secondary">
                 Add Category
@@ -30,23 +30,21 @@
     <div class="table-responsive">
         <table class="table table-striped table-sm">
             <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Slug</th>
-                    <th>Categories</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Slug</th>
+                <th>Categories</th>
+                <th>Deleted At</th>
+                <th>Actions</th>
+            </tr>
             </thead>
             <tbody>
             @if(count($categories) > 0)
-                                @php $count = null  @endphp
                 @foreach($categories as $category)
-                                @php $count++  @endphp
                     <tr>
-                        <td>{{ $count }}</td>
+                        <td>1</td>
                         <td>{{ $category->title }}</td>
                         <td>{!! $category->description !!}</td>
                         <td>{{ $category->slug }}</td>
@@ -55,15 +53,13 @@
                                 @foreach($category->subCategories as $subCategory)
                                     {{ $subCategory->title }},
                                 @endforeach
-                             @else
+                            @else
                                 <strong>{{ 'Parent Category' }}</strong>
                             @endif
                         </td>
-                        <td>{{ $category->created_at }}</td>
+                        <td>{{ $category->deleted_at }}</td>
                         <td>
-                            <a href="{{ route('admin.category.edit', $category->id) }}" class="btn btn-sm btn-info"> Edit </a>
-                            |
-                            <a href="{{ route('admin.category.remove', $category->id) }}" class="btn btn-sm btn-warning"> Trash </a>
+                            <a href="{{ route('admin.category.recover', $category->id) }}" class="btn btn-sm btn-primary"> Recover </a>
                             |
                             <a href="javascript:;" onclick="confirmDelete('{{ $category->id }}')" class="btn btn-sm btn-danger">
                                 Delete
@@ -95,7 +91,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {{ $categories->links() }}.
+{{--            {{ $categories->links() }}--}}
         </div>
     </div>
 @endsection
