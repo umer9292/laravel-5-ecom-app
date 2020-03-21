@@ -17,6 +17,7 @@ class CreateProductsTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->text('description');
+            $table->string('slug');
             $table->double('price');
             $table->boolean('discount');
             $table->string('discount_price');

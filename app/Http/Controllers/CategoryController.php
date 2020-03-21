@@ -92,6 +92,12 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'slug' => 'required|min:5|unique:categories',
+        ]);
+
         $category->title = $request->title;
         $category->description = $request->description;
         $category->slug = $request->slug;

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Product;
+use App\Http\Requests\StoreProduct;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -25,7 +27,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return  view('admin.products.create');
+        $categories = Category::all();
+        return  view('admin.products.create', compact('categories'));
     }
 
     /**
@@ -34,9 +37,35 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreProduct  $request)
     {
+        try {
+            if ($request->hasFile('thumbnail')){
+                $fileName =  time().$request->thumbnail->getClientOriginalName();
+                $path = $request->thumbnail->storeAs('storage/images', $fileName);
+            }
+            $newProduct = [
+                'title' => $request->title,
+                'slug' => $request->slug,
+                'description' => $request->description,
+                'thumbnail' => $path,
+                'featured' => ($request->featured) ? $request->featured : 0 ,
+                'status' => $request->status,
+                'price' => $request->price,
+                'discount' => ($request->discount) ? $request->discount : 0,
+                'discount_price' => ($request->discount_price) ? $request->discount_price : 0,
+            ];
 
+            $product = Product::create($newProduct);
+            $product->categories()->attach($request->category_id);
+            if  ( $product) {
+                return back()->with('message', 'Product Added Successfully!');
+            } else {
+                return back()->with('error', 'Error Inserting Product');
+            }
+        } catch (\Exception $e){
+            dd($e->getMessage());
+        }
     }
 
     /**

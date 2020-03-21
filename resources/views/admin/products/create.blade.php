@@ -6,8 +6,33 @@
 @endsection
 @section('content')
     <h2 class="modal-title">Add Product</h2>
-    <form action="{{ route('admin.product.store') }}" method="post" accept-charset="utf-8">
+    <form action="{{ route('admin.product.store') }}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
         <div class="row">
+            <div class="col-sm-12">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            </div>
+            <div class="col-sm-12">
+                @if (session()->has('message'))
+                    <div class="alert alert-success">
+                        {{ session('message') }}
+                    </div>
+                @endif
+            </div>
+            <div class="col-sm-12">
+                @if (session()->has('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+            </div>
             @csrf
             <div class="col-lg-9">
                 <div class="form-group row">
@@ -57,13 +82,13 @@
                             <div class="row align-items-center options">
                                 <div class="col-sm-4">
                                     <label for="" class="form-check-label">Option <span class="count">1</span></label>
-                                    <input type="text" name="extra['option'][]" class="form-control" value="" placeholder="size">
+                                    <input type="text" name="extra[option][]" class="form-control" value="" placeholder="size">
                                 </div>
                                 <div class="col-sm-8">
                                     <label for="" class="form-check-label">Values</label>
-                                    <input type="text" name="extra['values'][]" class="form-control" value="" placeholder="option1 | option2 | option3">
+                                    <input type="text" name="extra[values][]" class="form-control" value="" placeholder="option1 | option2 | option3">
                                     <label for="" class="form-check-label">Additional Prices</label>
-                                    <input type="text" name="extra['prices'][]" class="form-control" value="" placeholder="price1 | price2 | price3">
+                                    <input type="text" name="extra[prices][]" class="form-control" value="" placeholder="price1 | price2 | price3">
                                 </div>
                             </div>
                         </div>
@@ -75,7 +100,7 @@
                     <li class="list-group-item active"><h5>Status</h5></li>
                     <li class="list-group-item">
                         <div class="form-group row">
-                            <select name="" class="form-control" id="status">
+                            <select name="status" class="form-control" id="status">
                                 <option value="1">Pending</option>
                                 <option value="2">Publish</option>
                             </select>
@@ -89,13 +114,12 @@
                     <li class="list-group-item active"><h5>Featured Image</h5></li>
                     <li class="list-group-item">
                         <div class="input-group mb-3">
-                            <div class="custom-file">
+                            <div>
                                 <input type="file" name="thumbnail" id="thumbnail" class="custom-file-input">
                                 <label for="thumbnail" class="custom-file-label">Choose file</label>
                             </div>
-                            <div class="img-thumbnail text-center">
-{{--                                @if(isset($product)) {{ asset('images/'. $product->thumbnail) }} @else {{ asset('images/no-thumbnail.jpeg') }} @endif--}}
-                                <img src="" id="imgthumbnail" class="img-fluid" alt="">
+                            <div class="img-thumbnail text-center mt-2">
+                                <img src="@if(isset($product)) {{ asset('storage/images/'. $product->thumbnail) }} @else {{ asset('storage/images/no-thumbnail.jpeg') }} @endif" id="imgthumbnail" class="img-fluid" alt="">
                             </div>
                         </div>
                     </li>
@@ -113,11 +137,12 @@
                     </li>
                     <li class="list-group-item active"><h5>Select Category</h5></li>
                     <li class="list-group-item">
-                        <select name="category_id" id="select2" class="form-control" multiple>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                            <option value="4">Four</option>
+                        <select name="category_id[]" id="select2" class="form-control" multiple>
+                            @if(count($categories) > 0)
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->title }}</option>
+                                @endforeach
+                            @endif
                         </select>
                     </li>
                 </ul>
