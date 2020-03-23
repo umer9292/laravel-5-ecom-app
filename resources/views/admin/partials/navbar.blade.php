@@ -36,7 +36,7 @@
                             <div class="dropdown-menu" aria-labelledby="product">
                                 <a class="dropdown-item" href="{{ route('admin.product.create') }}">Add Product</a>
                                 <a class="dropdown-item" href="{{ route('admin.product.index') }}">All Products</a>
-                                <a class="dropdown-item" href="">Trashed Products</a>
+                                <a class="dropdown-item" href="{{ route('admin.product.trash') }}">Trashed Products</a>
                             </div>
                         </div>
                     </li>

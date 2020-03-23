@@ -54,7 +54,7 @@
                         <label for="" class="form-control-label">Price: </label>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="price">$</span>
+                                <span class="input-group-text" id="price">PKR</span>
                             </div>
                             <input type="text" class="form-control" name="price" placeholder="0.00" aria-label="price" aria-describedby="price" value="">
                         </div>
@@ -63,7 +63,7 @@
                         <label for="" class="form-control-label">Discount: </label>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="discount">$</span>
+                                <span class="input-group-text" id="discount">PKR</span>
                             </div>
                             <input type="text" class="form-control" name="discount_price" placeholder="0.00" aria-label="discount_price" aria-describedby="discount" value="">
                         </div>
@@ -119,7 +119,7 @@
                                 <label for="thumbnail" class="custom-file-label">Choose file</label>
                             </div>
                             <div class="img-thumbnail text-center mt-2">
-                                <img src="@if(isset($product)) {{ asset('storage/images/'. $product->thumbnail) }} @else {{ asset('storage/images/no-thumbnail.jpeg') }} @endif" id="imgthumbnail" class="img-fluid" alt="">
+                                <img src="@if(isset($product)) {{ asset('storage/'. $product->thumbnail) }} @else {{ asset('storage/images/no-thumbnail.jpeg') }} @endif" id="imgthumbnail" class="img-fluid" alt="">
                             </div>
                         </div>
                     </li>
@@ -128,7 +128,7 @@
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
                                 <span class="input-group-text" id="featured">
-                                    <input type="checkbox" name="discount" value="0">
+                                    <input type="checkbox" name="featured" value="@if(isset($product)){{$product->featuerd}}@else{{0}}@endif">
                                 </span>
                                 </div>
                                 <input type="text" class="form-control" name="featured" placeholder="0.00" aria-label="featured" aria-describedby="featured">

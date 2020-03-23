@@ -6,6 +6,7 @@ use App\Category;
 use App\Product;
 use App\Http\Requests\StoreProduct;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -16,8 +17,14 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
+        $products = Product::orderBy('id', 'desc')->paginate(5);
         return  view('admin.products.index', compact('products'));
+    }
+
+    public function trash()
+    {
+        $products = Product::orderBy('id', 'desc')->onlyTrashed()->paginate(5);
+        return  view('admin.products.trash', compact('products'));
     }
 
     /**
@@ -42,7 +49,7 @@ class ProductController extends Controller
         try {
             if ($request->hasFile('thumbnail')){
                 $fileName =  time().$request->thumbnail->getClientOriginalName();
-                $path = $request->thumbnail->storeAs('storage/images', $fileName);
+                $path = $request->thumbnail->storeAs('images', $fileName);
             }
             $newProduct = [
                 'title' => $request->title,
@@ -57,8 +64,8 @@ class ProductController extends Controller
             ];
 
             $product = Product::create($newProduct);
-            $product->categories()->attach($request->category_id);
-            if  ( $product) {
+            if  ( $product ) {
+                $product->categories()->attach($request->category_id);
                 return back()->with('message', 'Product Added Successfully!');
             } else {
                 return back()->with('error', 'Error Inserting Product');
@@ -76,7 +83,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+    //
     }
 
     /**
@@ -87,7 +94,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        $categories = Category::all();
+        return  view('admin.products.edit', ['product' => $product, 'categories' => $categories]);
     }
 
     /**
@@ -99,7 +107,43 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        try {
+            if ($request->hasFile('thumbnail')){
+                $fileName =  time().$request->thumbnail->getClientOriginalName();
+                $path = $request->thumbnail->storeAs('images', $fileName);
+                $product->thumbnail = $path;
+            }
+
+
+            $product->title = $request->title;
+            $product->slug = $request->slug;
+            $product->description = $request->description;
+            $product->featured = ($request->featured) ? $request->featured : 0 ;
+            $product->status = $request->status;
+            $product->price = $request->price;
+            $product->discount = ($request->discount) ? $request->discount : 0;
+            $product->discount_price = ($request->discount_price) ? $request->discount_price : 0;
+
+
+            $product->categories()->detach();
+            if  ( $product->save() ) {
+                $product->categories()->attach($request->category_id);
+                return back()->with('message', 'Product Updated Successfully!');
+            } else {
+                return back()->with('error', 'Error Updating Product');
+            }
+        } catch (\Exception $e){
+            dd($e->getMessage());
+        }
+    }
+
+    public function recoverProduct($slug)
+    {
+        $product = Product::withTrashed()->where(['slug' => $slug]);
+        if ($product->restore())
+            return back()->with('message', 'Product Successfully Restored!');
+        else
+            return back()->with('error', 'Error Restoring Product');
     }
 
     /**
@@ -110,6 +154,20 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        if ($product->categories()->detach() && $product->forceDelete()) {
+            Storage::delete($product->thumbnail);
+            return back()->with('message', 'Product Deleted Successfully!');
+        } else {
+            return back()->with('error', 'Error Deleting Record!');
+        }
+    }
+
+    public function remove(Product $product)
+    {
+        if ($product->delete()) {
+            return back()->with('message', 'Product Trashed Successfully!');
+        } else {
+            return back()->with('error', 'Error Trashing Record!');
+        }
     }
 }
