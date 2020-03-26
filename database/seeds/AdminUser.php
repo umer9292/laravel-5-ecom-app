@@ -26,11 +26,9 @@ class AdminUser extends Seeder
         $user = User::create([
             'email' => 'umer@gamil.com',
             'password' => bcrypt('secret'),
-            'role_id' => $role->id
+            'role_id' => $role->id,
+            'status' => 1
         ]);
 
-        Profile::create([
-            'user_id' => $user->id
-        ]);
     }
 }

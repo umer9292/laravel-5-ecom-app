@@ -10,13 +10,10 @@
 
     <title>{{ config('app.name', 'Laravel eCommerce') }}</title>
 
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
-
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/admin.css') }}">
+    <link href="{{ asset('assets/css/vendor.css') }}" rel="stylesheet">
 </head>
 <body>
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" style="margin-top: 50px">
@@ -54,6 +51,7 @@
 
     <!-- Placed at the end of the document so the pages load faster -->
     <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/vendor.js') }}"></script>
     @yield('scripts')
 </body>
 </html>

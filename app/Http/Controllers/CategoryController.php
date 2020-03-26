@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use Illuminate\Http\Request;
-
+USE App\Services\PayUService\Exception;
 class CategoryController extends Controller
 {
     /**
@@ -26,7 +26,6 @@ class CategoryController extends Controller
     public function trash()
     {
         $categories = Category::orderBy('id', 'desc')->onlyTrashed()->paginate(5);
-//        dd($categories);
         return  view('admin.categories.trash', compact('categories'));
     }
 
@@ -49,15 +48,23 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'slug' => 'required|min:5|unique:categories',
-        ]);
+        try {
+            $request->validate([
+                'title' => 'required',
+                'description' => 'required',
+                'slug' => 'required|min:5|unique:categories',
+            ]);
 
-        $categories = Category::create($request->only('title', 'description', 'slug'));
-        $categories->subCategories()->attach($request->parent_id);
-        return back()->with('message', 'Category Added Successfully!');
+            $categories = Category::create($request->only('title', 'description', 'slug'));
+            if ($categories) {
+                $categories->subCategories()->attach($request->parent_id);
+                return back()->with('success', 'Category Added Successfully!');
+            } else {
+                return back()->with('error', 'Error Inserting Category!');
+            }
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
     }
 
     /**
@@ -109,14 +116,14 @@ class CategoryController extends Controller
         $category->subCategories()->attach($request->parent_id);
         // save current record into database
         $category->save();
-        return back()->with('message', 'Category Updated Successfully!');
+        return back()->with('success', 'Category Updated Successfully!');
     }
 
-    public function recoverCat($id)
+    public function recoverCategory($slug)
     {
-        $category = Category::withTrashed()->findOrFail($id);
+        $category = Category::withTrashed()->where(['slug' => $slug]);
         if ($category->restore())
-            return back()->with('message', 'Category Successfully Restored!');
+            return back()->with('success', 'Category Successfully Restored!');
         else
             return back()->with('error', 'Error Restoring Category');
     }
@@ -130,7 +137,7 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         if ($category->subCategories()->detach() && $category->forceDelete()) {
-            return back()->with('message', 'Category Deleted Successfully!');
+            return back()->with('success', 'Category Deleted Successfully!');
         } else {
             return back()->with('error', 'Error Deleting Record!');
         }
@@ -145,7 +152,7 @@ class CategoryController extends Controller
     public function remove(Category $category)
     {
         if ($category->delete()) {
-            return back()->with('message', 'Category Successfully Trashed!');
+            return back()->with('success', 'Category Successfully Trashed!');
         } else {
             return back()->with('error', 'Error Trashing Record!');
         }

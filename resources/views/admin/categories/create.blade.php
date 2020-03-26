@@ -5,27 +5,12 @@
     <li class="breadcrumb-item active" aria-current="page">Add Category</li>
 @endsection
 @section('content')
+<div class="col-sm-12">
+    @include('admin.partials.message')
+</div>
 <form action="{{ route('admin.category.store') }}" method="post" accept-charset="utf-8">
     @csrf
     <div class="form-group row">
-        <div class="col-sm-12">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-        </div>
-        <div class="col-sm-12">
-            @if (session()->has('message'))
-                <div class="alert alert-success">
-                    {{ session('message') }}
-                </div>
-            @endif
-        </div>
         <div class="col-sm-12">
             <label for="textUrl" class="form-control-label">Title: </label>
             <input type="text" name="title" id="textUrl" class="form-control">

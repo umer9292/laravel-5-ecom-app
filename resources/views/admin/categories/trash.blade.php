@@ -1,6 +1,7 @@
 @extends('admin.app')
 @section('breadcrumbs')
     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.category.index') }}">Categories</a></li>
     <li class="breadcrumb-item active" aria-current="page">Trash Categories</li>
 @endsection
 @section('content')
@@ -14,24 +15,14 @@
     </div>
     <div class="row">
         <div class="col-sm-12">
-            @if (session()->has('message'))
-                <div class="alert alert-success">
-                    {{ session('message') }}
-                </div>
-            @endif
-
-            @if (session()->has('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
+            @include('admin.partials.message')
         </div>
     </div>
     <div class="table-responsive">
         <table class="table table-striped table-sm">
             <thead>
             <tr>
-                <th>#</th>
+                <th>S.No</th>
                 <th>Title</th>
                 <th>Description</th>
                 <th>Slug</th>
@@ -44,7 +35,7 @@
             @if(count($categories) > 0)
                 @foreach($categories as $category)
                     <tr>
-                        <td>1</td>
+                        <td> {{ $loop->iteration }} </td>
                         <td>{{ $category->title }}</td>
                         <td>{!! $category->description !!}</td>
                         <td>{{ $category->slug }}</td>
@@ -57,23 +48,20 @@
                                 <strong>{{ 'Parent Category' }}</strong>
                             @endif
                         </td>
-                        <td>{{ $category->deleted_at }}</td>
+                        <td>{{ diff4Human($category->deleted_at) }}</td>
                         <td>
-                            <a href="{{ route('admin.category.recover', $category->id) }}" class="btn btn-sm btn-primary"> Recover </a>
-                            |
-                            <a href="javascript:;" onclick="confirmDelete('{{ $category->id }}')" class="btn btn-sm btn-danger">
-                                Delete
-                            </a>
-
-                            <form
-                                id="delete-category-{{ $category->id }}"
-                                action="{{ route('admin.category.destroy', $category->id) }}"
-                                method="POST"
-                                style="display: none;"
-                            >
-                                @method('DELETE')
-                                @csrf
-                            </form>
+                            <div class="btn-group" role="group" aria-label="example">
+                                <a href="{{ route('admin.category.recover', $category) }}" class="btn btn-sm btn-primary mr-1">
+                                    <i class="fas fa-trash-restore"></i>
+                                    Recover
+                                </a>
+                                |
+                                {!! Form::open(['route' =>  ['admin.category.destroy', $category], 'method' => 'POST']) !!}
+                                    @csrf
+                                    @method('DELETE')
+                                    {{ Form::button('<i class="fas fa-trash-alt"></i> Delete', ['type' => 'submit', 'class' => 'btn btn-danger btn-sm ml-1']) }}
+                                {!! Form::close() !!}
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -91,17 +79,8 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-{{--            {{ $categories->links() }}--}}
+            {{ $categories->links() }}
         </div>
     </div>
 @endsection
-@section('scripts')
-    <script type="text/javascript">
-        function confirmDelete(id) {
-            let choice = confirm("Are You Sure, You want to Delete this record ?");
-            if(choice) {
-                document.getElementById('delete-category-'+id).submit();
-            }
-        }
-    </script>
-@endsection
+

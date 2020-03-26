@@ -1,16 +1,15 @@
 @extends('admin.app')
 @section('breadcrumbs')
     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-    <li class="breadcrumb-item"><a href="{{ route('admin.profile.index') }}">Profiles</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.profile.index') }}">Users</a></li>
     <li class="breadcrumb-item active" aria-current="page">Add User</li>
 @endsection
 @section('content')
-    <h2 class="modal-title">Edit Profile</h2>
+    <h2 class="modal-title">Add User</h2>
     @include('admin.partials.message')
-    <form action="{{ route('admin.profile.update', $profile->slug) }}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+    <form action="{{ route('admin.profile.store') }}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
         <div class="row">
             @csrf
-            @method('PUT')
             <div class="col-lg-9">
                 <div class="form-group row">
                     <div class="col-sm-12 col-md-6">
@@ -108,10 +107,10 @@
                         <div class="img-thumbnail text-center mt-2">
                             <img
                                 src="@if(isset($users))
-                                {{ asset('storage/profile/'. $users->profile->thumbnail) }}
-                                @else
-                                {{ asset('storage/images/profile/no-thumbnail.jpeg') }}
-                                @endif"
+                                        {{ asset('storage/profile/'. $users->profile->thumbnail) }}
+                                    @else
+                                        {{ asset('storage/images/profile/no-thumbnail.jpeg') }}
+                                    @endif"
                                 id="imgthumbnail" class="img-fluid" alt="" height="100" width="150"
                             >
                         </div>
@@ -142,19 +141,19 @@
             stateSelector.select2();
 
             $('#textUrl').on('keyup', function () {
-                var pretty_url = slugify($(this).val());
-                $('#url').html(slugify(pretty_url));
-                $('#slug').val(pretty_url);
+               var pretty_url = slugify($(this).val());
+               $('#url').html(slugify(pretty_url));
+               $('#slug').val(pretty_url);
             });
 
             $('#thumbnail').on('change', function () {
-                var file = $(this).get(0).files;
-                var reader = new FileReader();
-                reader.readAsDataURL(file[0]);
-                reader.addEventListener("load", function (e) {
-                    var image = e.target.result;
-                    $('#imgthumbnail').attr('src', image);
-                })
+               var file = $(this).get(0).files;
+               var reader = new FileReader();
+               reader.readAsDataURL(file[0]);
+               reader.addEventListener("load", function (e) {
+                   var image = e.target.result;
+                   $('#imgthumbnail').attr('src', image);
+               })
             });
 
             // On Country Change

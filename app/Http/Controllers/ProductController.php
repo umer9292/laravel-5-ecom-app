@@ -17,13 +17,13 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::orderBy('id', 'desc')->paginate(5);
+        $products = Product::orderByDesc('id')->paginate(5);
         return  view('admin.products.index', compact('products'));
     }
 
     public function trash()
     {
-        $products = Product::orderBy('id', 'desc')->onlyTrashed()->paginate(5);
+        $products = Product::orderByDesc('id')->onlyTrashed()->paginate(5);
         return  view('admin.products.trash', compact('products'));
     }
 
@@ -58,6 +58,7 @@ class ProductController extends Controller
                 'thumbnail' => $path,
                 'featured' => ($request->featured) ? $request->featured : 0 ,
                 'status' => $request->status,
+                'options' => isset($request->extras) ? json_encode($request->extras) : null,
                 'price' => $request->price,
                 'discount' => ($request->discount) ? $request->discount : 0,
                 'discount_price' => ($request->discount_price) ? $request->discount_price : 0,
@@ -116,14 +117,13 @@ class ProductController extends Controller
 
 
             $product->title = $request->title;
-            $product->slug = $request->slug;
+//            $product->slug = $request->slug;
             $product->description = $request->description;
             $product->featured = ($request->featured) ? $request->featured : 0 ;
             $product->status = $request->status;
             $product->price = $request->price;
             $product->discount = ($request->discount) ? $request->discount : 0;
             $product->discount_price = ($request->discount_price) ? $request->discount_price : 0;
-
 
             $product->categories()->detach();
             if  ( $product->save() ) {

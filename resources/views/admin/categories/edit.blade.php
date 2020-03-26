@@ -5,28 +5,13 @@
     <li class="breadcrumb-item active" aria-current="page">Edit Category</li>
 @endsection
 @section('content')
-    <form action="{{ route('admin.category.update', $category->id) }}" method="post" accept-charset="utf-8">
+    <div class="col-sm-12">
+        @include('admin.partials.message')
+    </div>
+    <form action="{{ route('admin.category.update', $category->slug) }}" method="post" accept-charset="utf-8">
         @csrf
         @method('PUT')
         <div class="form-group row">
-            <div class="col-sm-12">
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-            </div>
-            <div class="col-sm-12">
-                @if (session()->has('message'))
-                    <div class="alert alert-success">
-                        {{ session('message') }}
-                    </div>
-                @endif
-            </div>
             <div class="col-sm-12">
                 <label for="textUrl" class="form-control-label">Title: </label>
                 <input type="text" name="title" id="textUrl" class="form-control" value="{{ @$category->title }}">
@@ -79,12 +64,6 @@
                 console.log( editor );
             }).catch( error => {
                 console.error( error );
-            });
-
-            $('#textUrl').on('keyup', function () {
-                var url = slugify($(this).val());
-                $('#url').html(url);
-                $('#slug').val(url);
             });
 
             $('#parent_id').select2({

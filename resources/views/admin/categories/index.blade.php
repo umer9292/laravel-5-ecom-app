@@ -14,17 +14,7 @@
     </div>
     <div class="row">
         <div class="col-sm-12">
-            @if (session()->has('message'))
-                <div class="alert alert-success">
-                    {{ session('message') }}
-                </div>
-            @endif
-
-            @if (session()->has('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
+            @include('admin.partials.message')
         </div>
     </div>
     <div class="table-responsive">
@@ -41,55 +31,59 @@
                 </tr>
             </thead>
             <tbody>
-            @if(count($categories) > 0)
-                                @php $count = null  @endphp
-                @foreach($categories as $category)
-                                @php $count++  @endphp
-                    <tr>
-                        <td>{{ $count }}</td>
-                        <td>{{ $category->title }}</td>
-                        <td>{!! $category->description !!}</td>
-                        <td>{{ $category->slug }}</td>
-                        <td>
-                            @if($category->subCategories()->count() > 0)
-                                @foreach($category->subCategories as $subCategory)
-                                    {{ $subCategory->title }},
-                                @endforeach
-                             @else
-                                <strong>{{ 'Parent Category' }}</strong>
-                            @endif
-                        </td>
-                        <td>{{ $category->created_at }}</td>
-                        <td>
-                            <a href="{{ route('admin.category.edit', $category->id) }}" class="btn btn-sm btn-info"> Edit </a>
-                            |
-                            <a href="{{ route('admin.category.remove', $category->id) }}" class="btn btn-sm btn-warning"> Trash </a>
-                            |
-                            <a href="javascript:;" onclick="confirmDelete('{{ $category->id }}')" class="btn btn-sm btn-danger">
-                                Delete
-                            </a>
+                @if(count($categories) > 0)
+                    @foreach($categories as $category)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $category->title }}</td>
+                            <td>{!! $category->description !!}</td>
+                            <td>{{ $category->slug }}</td>
+                            <td>
+                                @if($category->subCategories()->count() > 0)
+                                    @foreach($category->subCategories as $subCategory)
+                                        {{ $subCategory->title }},
+                                    @endforeach
+                                 @else
+                                    <strong>{{ 'Parent Category' }}</strong>
+                                @endif
+                            </td>
+                            <td>
+                                {{ diff4Human( $category->created_at ) }}
+                                @if($category->stored_at)
+                                    (Stored At {{ diff4Human( $category->stored_at ) }})
+                                @endif
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="example">
+                                    <a href="{{ route('admin.category.edit', $category) }}" class="btn btn-success btn-sm mr-1">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </a>
+                                    |
+                                    <a href="{{ route('admin.category.remove', $category) }}" class="btn btn-secondary btn-sm mx-1">
+                                        <i class="fas fa-trash"></i>
+                                        Trash
+                                    </a>
+                                    |
+                                    {!! Form::open(['route' =>  ['admin.category.destroy', $category], 'method' => 'POST']) !!}
+                                        @csrf
+                                        @method('DELETE')
 
-                            <form
-                                id="delete-category-{{ $category->id }}"
-                                action="{{ route('admin.category.destroy', $category->id) }}"
-                                method="POST"
-                                style="display: none;"
-                            >
-                                @method('DELETE')
-                                @csrf
-                            </form>
+                                        {{ Form::button('<i class="fas fa-trash-alt"></i> Delete', ['type' => 'submit', 'class' => 'btn btn-danger btn-sm ml-1']) }}
+                                    {!! Form::close() !!}
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="7">
+                            <div class="alert alert-info" role="alert">
+                                No Categories Found..
+                            </div>
                         </td>
                     </tr>
-                @endforeach
-            @else
-                <tr>
-                    <td colspan="7">
-                        <div class="alert alert-info" role="alert">
-                            No Categories Found..
-                        </div>
-                    </td>
-                </tr>
-            @endif
+                @endif
             </tbody>
         </table>
     </div>
@@ -98,14 +92,4 @@
             {{ $categories->links() }}.
         </div>
     </div>
-@endsection
-@section('scripts')
-    <script type="text/javascript">
-        function confirmDelete(id) {
-            let choice = confirm("Are You Sure, You want to Delete this record ?");
-            if(choice) {
-                document.getElementById('delete-category-'+id).submit();
-            }
-        }
-    </script>
 @endsection

@@ -13,24 +13,24 @@
                 <ul class="nav flex-column mt-5">
                     <li class="nav-item mt2">
                         <a class="nav-link @if(request()->url() == route('admin.dashboard')) {{'active'}} @endif" href="{{ url('/admin/dashboard') }}">
-                            <span data-feather="home"></span>
+                            <i class="fas fa-home mr-1"></i>
                             Dashboard <span class="sr-only">(current)</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
-                            <span data-feather="file"></span>
+                            <i class="fas fa-file-alt mr-1"></i>
                             Orders
                         </a>
                     </li>
                     <li class="nav-item">
                         <div class="dropdown">
                             <a
-                                class="nav-link  dropdown-toggle @if (request()->url() == route('admin.product.index')) {{'active'}} @endif"
+                                class="nav-link dropdown-toggle @if (request()->url() == route('admin.product.index')) {{'active'}} @endif"
                                  href="{{ route('admin.product.index') }}"
                                 role="button" id="product" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                             >
-                                <span data-feather="shopping-cart"></span>
+                                <i class="fas fa-shopping-cart mr-1"></i>
                                 Products
                             </a>
                             <div class="dropdown-menu" aria-labelledby="product">
@@ -43,11 +43,11 @@
                     <li class="nav-item">
                         <div class="dropdown">
                             <a
-                                class="nav-link  dropdown-toggle  @if(request()->url() == route('admin.category.index')) {{'active'}} @endif"
+                                class="nav-link dropdown-toggle @if(request()->url() == route('admin.category.index')) {{'active'}} @endif"
                                 href="{{ route('admin.category.index') }}"
                                 role="button" id="category" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                             >
-                                <span data-feather="bar-chart-2"></span>
+                                <i class="fas fa-chart-bar mr-1"></i>
                                 Categories
                             </a>
                             <div class="dropdown-menu" aria-labelledby="category">
@@ -58,14 +58,25 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span data-feather="users"></span>
-                            Customers
-                        </a>
+                        <div class="dropdown">
+                            <a
+                                class="nav-link dropdown-toggle @if(request()->url() == route('admin.profile.index')) {{'active'}} @endif"
+                                href="{{ route('admin.profile.index') }}"
+                                role="button" id="customer" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            >
+                                <i class="fas fa-users mr-1"></i>
+                                Customers
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="customer">
+                                <a class="dropdown-item" href="{{ route('admin.profile.create') }}">Add Profile</a>
+                                <a class="dropdown-item" href="{{ route('admin.profile.index') }}">All Profiles</a>
+                                <a class="dropdown-item" href="{{ route('admin.profile.trash') }}">Trashed Profiles</a>
+                            </div>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
-                            <span data-feather="layers"></span>
+                            <i class="fas fa-layer-group mr-1"></i>
                             Integrations
                         </a>
                     </li>

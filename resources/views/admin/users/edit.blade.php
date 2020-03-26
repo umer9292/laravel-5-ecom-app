@@ -2,11 +2,13 @@
 @section('breadcrumbs')
     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="{{ route('admin.product.index') }}">Products</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Add Product</li>
+    <li class="breadcrumb-item active" aria-current="page">Edit Product</li>
 @endsection
 @section('content')
-    <h2 class="modal-title">Add Product</h2>
-    <form action="{{ route('admin.product.store') }}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+    <h2 class="modal-title">Edit Product</h2>
+    <form action="{{ route('admin.product.update', $product->slug) }}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
         <div class="row">
             <div class="col-sm-12">
                 @if ($errors->any())
@@ -33,20 +35,21 @@
                     </div>
                 @endif
             </div>
-            @csrf
             <div class="col-lg-9">
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <label for="textUrl" class="form-control-label">Title: </label>
-                        <input type="text" name="title" id="textUrl" class="form-control">
-                        <p class="small"> {{ config('app.url') }} <span id="url"></span></p>
-                        <input type="hidden" name="slug" id="slug" value="">
+                        <input type="text" name="title" id="textUrl" class="form-control" value="{{ @$product->title }}">
+                        <p class="small"> {{ config('app.url') }} <span id="url">{{ @$product->slug }}</span></p>
+                        <input type="hidden" name="slug" id="slug" value="{{ @$product->slug }}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <label for="editor" class="form-control-label">Description: </label>
-                        <textarea name="description" id="editor" class="form-control"></textarea>
+                        <textarea name="description" id="editor" class="form-control">
+                            {!! @$product->description !!}
+                        </textarea>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -56,7 +59,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="price">PKR</span>
                             </div>
-                            <input type="text" class="form-control" name="price" placeholder="0.00" aria-label="price" aria-describedby="price" value="">
+                            <input type="text" class="form-control" name="price" placeholder="0.00" aria-label="price" aria-describedby="price" value="{{ @$product->price }}">
                         </div>
                     </div>
                     <div class="col-6">
@@ -65,7 +68,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="discount">PKR</span>
                             </div>
-                            <input type="text" class="form-control" name="discount_price" placeholder="0.00" aria-label="discount_price" aria-describedby="discount" value="">
+                            <input type="text" class="form-control" name="discount_price" placeholder="0.00" aria-label="discount_price" aria-describedby="discount" value="{{ @$product->discount_price }}">
                         </div>
                     </div>
                 </div>
@@ -90,13 +93,17 @@
                     <li class="list-group-item">
                         <div class="form-group row">
                             <select name="status" class="form-control" id="status">
-                                <option value="1">Pending</option>
-                                <option value="2">Publish</option>
+                                <option value="1" @if($product->status == 0) {{ 'selected' }} @endif >
+                                    Pending
+                                </option>
+                                <option value="2" @if($product->status == 1) {{ 'selected' }} @endif >
+                                    Publish
+                                </option>
                             </select>
                         </div>
                         <div class="form-group row">
                             <div class="col-lg-12">
-                                <input type="submit" name="submit" class="btn btn-primary btn-block" value="Add Product">
+                                <input type="submit" name="submit" class="btn btn-primary btn-block" value="Update Product">
                             </div>
                         </div>
                     </li>
@@ -116,20 +123,40 @@
                         <div class="col-12">
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
-                                <span class="input-group-text" id="featured">
-                                    <input type="checkbox" name="featured" value="@if(isset($product)){{$product->featuerd}}@else{{0}}@endif">
-                                </span>
+                                    <span class="input-group-text">
+                                        <input
+                                            type="checkbox"
+                                            id="featured"
+                                            name="featured"
+                                            value="@if(isset($product)){{$product->featuerd}}@else{{0}}@endif "
+                                            @if(isset($product) && $product->featuerd == 1) {{ 'checked' }} @endif
+                                        >
+                                    </span>
                                 </div>
-                                <input type="text" class="form-control" name="featured" placeholder="0.00" aria-label="featured" aria-describedby="featured">
+                                <p
+                                    class="form-control"
+                                >
+                                    Featured Product
+                                </p>
                             </div>
                         </div>
                     </li>
+                    @php
+                        $ids = (isset($product) && $product->categories->count() > 0) ? array_pluck($product->categories->toArray(), 'id') : null;
+                    @endphp
                     <li class="list-group-item active"><h5>Select Category</h5></li>
                     <li class="list-group-item">
                         <select name="category_id[]" id="select2" class="form-control" multiple>
                             @if(count($categories) > 0)
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->title }}</option>
+                                    <option
+                                        value="{{ $category->id }}"
+                                        @if(!is_null($ids) && in_array($category->id, $ids))
+                                            {{ 'selected' }}
+                                        @endif
+                                    >
+                                        {{ $category->title }}
+                                    </option>
                                 @endforeach
                             @endif
                         </select>
@@ -151,12 +178,6 @@
                 console.error( error );
             });
 
-            $('#textUrl').on('keyup', function () {
-               var pretty_url = slugify($(this).val());
-               $('#url').html(slugify(pretty_url));
-               $('#slug').val(pretty_url);
-            });
-
             $('#select2').select2({
                 placeholder: "Select a Status",
                 allowClear : true,
@@ -164,13 +185,13 @@
             });
 
             $('#thumbnail').on('change', function () {
-               var file = $(this).get(0).files;
-               var reader = new FileReader();
-               reader.readAsDataURL(file[0]);
-               reader.addEventListener("load", function (e) {
-                   var image = e.target.result;
-                   $('#imgthumbnail').attr('src', image);
-               })
+                var file = $(this).get(0).files;
+                var reader = new FileReader();
+                reader.readAsDataURL(file[0]);
+                reader.addEventListener("load", function (e) {
+                    var image = e.target.result;
+                    $('#imgthumbnail').attr('src', image);
+                })
             });
 
             $('#btn-add').on('click', function (e) {
@@ -181,10 +202,17 @@
             });
 
             $('#btn-remove').on('click', function (e) {
-               if ($('.options').length > 0) {
-                   $('.options:last').remove();
-               }
+                if ($('.options').length > 1) {
+                    $('.options:last').remove();
+                }
             });
+
+            $('#featured').on('change', function () {
+                if ($(this).is(':checked'))
+                    $(this).val(1);
+                else
+                    $(this).val(0);
+            })
         })
     </script>
 @endsection
