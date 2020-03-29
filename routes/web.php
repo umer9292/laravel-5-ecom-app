@@ -22,6 +22,20 @@ Route::get('/home', [
     'uses' => 'HomeController@index'
 ]);
 
+Route::group(['as' => 'products.', 'prefix' => 'products'], function () {
+    Route::get('/', [
+        'as' => 'all',
+        'uses' => 'ProductController@show'
+    ]);
+});
+
+Route::group(['as' => 'category.', 'prefix' => 'category'], function () {
+    Route::get('/category', [
+        'as' => 'products',
+        'uses' => 'ProductController@products'
+    ]);
+});
+
 Route::group([
     'as' => 'admin.',
     'prefix' => 'admin',

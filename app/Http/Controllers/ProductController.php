@@ -90,7 +90,9 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-    //
+        $categories = Category::all();
+        $products = Product::all();
+        return view('products.all', compact('categories', 'products'));
     }
 
     /**
