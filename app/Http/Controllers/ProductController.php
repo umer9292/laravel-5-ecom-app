@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Cart;
 use App\Category;
 use App\Product;
 use App\Http\Requests\StoreProduct;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\Types\Nullable;
 
@@ -90,9 +92,28 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $categories = Category::all();
-        $products = Product::all();
+//        dd(Session::get('cart'));
+        $categories = Category::with('subCategories')
+                                ->get();
+        $products = Product::with('categories')
+                            ->orderByDesc('created_at')
+                            ->paginate(9);
         return view('products.all', compact('categories', 'products'));
+    }
+
+    public function single(Product $product)
+    {
+        return view('products.single', compact('product'));
+    }
+
+    public function addToCart(Request $request, Product $product)
+    {
+        $oldCart = Session::has('cart') ? Session::get('cart') : null ;
+        $qty = $request->qty ? $request->qty : 1 ;
+        $cart = new  Cart($oldCart);
+        $cart->addProduct($product, $qty);
+        Session::put('cart', $cart);
+        return back()->with('success', "Product $product->title has been successfully added to Cart");
     }
 
     /**

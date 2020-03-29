@@ -27,6 +27,21 @@ Route::group(['as' => 'products.', 'prefix' => 'products'], function () {
         'as' => 'all',
         'uses' => 'ProductController@show'
     ]);
+
+    Route::get('/{product}', [
+        'as' => 'single',
+        'uses' => 'ProductController@single'
+    ]);
+
+    Route::get('/addToCart/{product}', [
+        'as' => 'addToCart',
+        'uses' => 'ProductController@addToCart'
+    ]);
+
+    Route::post('/{product}', [
+        'as' => 'single',
+        'uses' => 'ProductController@single'
+    ]);
 });
 
 Route::group(['as' => 'category.', 'prefix' => 'category'], function () {
