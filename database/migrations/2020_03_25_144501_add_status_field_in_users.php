@@ -13,7 +13,7 @@ class AddStatusFieldInUsers extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('profiles', function (Blueprint $table) {
             $table->unsignedInteger('status')->default(1)->after('role_id');
         });
     }
@@ -25,7 +25,7 @@ class AddStatusFieldInUsers extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('profiles', function (Blueprint $table) {
             $table->dropColumn('status');
         });
     }

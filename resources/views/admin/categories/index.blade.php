@@ -8,6 +8,7 @@
         <h2 class="h2">Categories List</h2>
         <div class="btn-toolbar mb-2 mb-md-0">
             <a href="{{ route('admin.category.create') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-plus"></i>
                 Add Category
             </a>
         </div>
@@ -21,7 +22,7 @@
         <table class="table table-striped table-sm">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>S.No</th>
                     <th>Title</th>
                     <th>Description</th>
                     <th>Slug</th>
@@ -49,27 +50,25 @@
                             </td>
                             <td>
                                 {{ diff4Human( $category->created_at ) }}
-                                @if($category->stored_at)
-                                    (Stored At {{ diff4Human( $category->stored_at ) }})
+                                @if($category->restore_at)
+                                    (Restore: {{ diff4Human($category->restore_at) }})
                                 @endif
                             </td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="example">
-                                    <a href="{{ route('admin.category.edit', $category) }}" class="btn btn-success btn-sm mr-1">
+                                    <a href="{{ route('admin.category.edit', $category) }}" class="btn btn-outline-success btn-sm ">
                                         <i class="fas fa-edit"></i>
                                         Edit
                                     </a>
-                                    |
-                                    <a href="{{ route('admin.category.remove', $category) }}" class="btn btn-secondary btn-sm mx-1">
+
+                                    <a href="{{ route('admin.category.remove', $category) }}" class="btn btn-outline-secondary btn-sm mx-1">
                                         <i class="fas fa-trash"></i>
                                         Trash
                                     </a>
-                                    |
-                                    {!! Form::open(['route' =>  ['admin.category.destroy', $category], 'method' => 'POST']) !!}
-                                        @csrf
-                                        @method('DELETE')
 
-                                        {{ Form::button('<i class="fas fa-trash-alt"></i> Delete', ['type' => 'submit', 'class' => 'btn btn-danger btn-sm ml-1']) }}
+                                    {!! Form::open(['route' =>  ['admin.category.destroy', $category], 'method' => 'POST']) !!}
+                                        @method('DELETE')
+                                        {{ Form::button('<i class="fas fa-trash-alt"></i> Delete', ['type' => 'submit', 'class' => 'btn btn-danger btn-sm']) }}
                                     {!! Form::close() !!}
                                 </div>
                             </td>

@@ -36,14 +36,12 @@
                 <select name="parent_id[]" id="parent_id" class="form-control" multiple>
                     @if(isset($categories))
                         <option value="0">Top Level</option>
-                        option
                         @foreach($categories as $cat)
                             <option value="{{ $cat->id }}" @if(!is_null($ids) && in_array($cat->id, $ids)) {{ 'selected' }} @endif>
                                 {{ $cat->title }}
                             </option>
                         @endforeach
                     @endif
-                    option
                 </select>
             </div>
         </div>

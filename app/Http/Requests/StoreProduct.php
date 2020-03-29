@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use App\Profile;
 
 class StoreProduct extends FormRequest
 {
@@ -25,7 +27,7 @@ class StoreProduct extends FormRequest
     {
         return [
             'title' => 'required',
-            'slug' => 'required|unique:products',
+            'slug' => 'required|unique:products,slug,'.$this->slug.',slug',
             'description' => 'required',
             'thumbnail' => 'required|mimes:jpeg,bmp,png|max:3072',
             'status' => 'required|numeric',

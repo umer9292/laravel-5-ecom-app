@@ -7,6 +7,7 @@ use App\Product;
 use App\Http\Requests\StoreProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use phpDocumentor\Reflection\Types\Nullable;
 
 class ProductController extends Controller
 {
@@ -17,13 +18,18 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::orderByDesc('id')->paginate(5);
+        $products = Product::with('categories')
+                            ->orderByDesc('id')
+                            ->paginate(5);
         return  view('admin.products.index', compact('products'));
     }
 
     public function trash()
     {
-        $products = Product::orderByDesc('id')->onlyTrashed()->paginate(5);
+        $products = Product::with('categories')
+                            ->orderByDesc('id')
+                            ->onlyTrashed()
+                            ->paginate(5);
         return  view('admin.products.trash', compact('products'));
     }
 
@@ -34,7 +40,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::with('subCategories')->get();
         return  view('admin.products.create', compact('categories'));
     }
 
@@ -56,9 +62,9 @@ class ProductController extends Controller
                 'slug' => $request->slug,
                 'description' => $request->description,
                 'thumbnail' => $path,
-                'featured' => ($request->featured) ? $request->featured : 0 ,
+                'featured' => $request->featured ? 1 : 0,
                 'status' => $request->status,
-                'options' => isset($request->extras) ? json_encode($request->extras) : null,
+                'options' =>  isset($request->extras) ? json_encode($request->extras) : Null,
                 'price' => $request->price,
                 'discount' => ($request->discount) ? $request->discount : 0,
                 'discount_price' => ($request->discount_price) ? $request->discount_price : 0,
@@ -67,7 +73,7 @@ class ProductController extends Controller
             $product = Product::create($newProduct);
             if  ( $product ) {
                 $product->categories()->attach($request->category_id);
-                return back()->with('message', 'Product Added Successfully!');
+                return back()->with('success', 'Product Added Successfully!');
             } else {
                 return back()->with('error', 'Error Inserting Product');
             }
@@ -95,7 +101,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::all();
+        $categories = Category::with('subCategories')->get();
         return  view('admin.products.edit', ['product' => $product, 'categories' => $categories]);
     }
 
@@ -119,7 +125,7 @@ class ProductController extends Controller
             $product->title = $request->title;
 //            $product->slug = $request->slug;
             $product->description = $request->description;
-            $product->featured = ($request->featured) ? $request->featured : 0 ;
+            $product->featured =  $request->featured ? 1 : 0;
             $product->status = $request->status;
             $product->price = $request->price;
             $product->discount = ($request->discount) ? $request->discount : 0;
@@ -128,7 +134,7 @@ class ProductController extends Controller
             $product->categories()->detach();
             if  ( $product->save() ) {
                 $product->categories()->attach($request->category_id);
-                return back()->with('message', 'Product Updated Successfully!');
+                return back()->with('success', 'Product Updated Successfully!');
             } else {
                 return back()->with('error', 'Error Updating Product');
             }
@@ -140,8 +146,10 @@ class ProductController extends Controller
     public function recoverProduct($slug)
     {
         $product = Product::withTrashed()->where(['slug' => $slug]);
-        if ($product->restore())
-            return back()->with('message', 'Product Successfully Restored!');
+        if ($product->restore()) {
+            $product->update(['restore_at' => now()->toDateTimeString()]);
+            return back()->with('success', 'Product Successfully Restored!');
+        }
         else
             return back()->with('error', 'Error Restoring Product');
     }
@@ -156,7 +164,7 @@ class ProductController extends Controller
     {
         if ($product->categories()->detach() && $product->forceDelete()) {
             Storage::delete($product->thumbnail);
-            return back()->with('message', 'Product Deleted Successfully!');
+            return back()->with('success', 'Product Deleted Successfully!');
         } else {
             return back()->with('error', 'Error Deleting Record!');
         }
@@ -165,7 +173,7 @@ class ProductController extends Controller
     public function remove(Product $product)
     {
         if ($product->delete()) {
-            return back()->with('message', 'Product Trashed Successfully!');
+            return back()->with('success', 'Product Trashed Successfully!');
         } else {
             return back()->with('error', 'Error Trashing Record!');
         }

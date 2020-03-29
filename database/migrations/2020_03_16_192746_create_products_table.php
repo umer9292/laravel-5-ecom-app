@@ -23,6 +23,7 @@ class CreateProductsTable extends Migration
             $table->string('discount_price');
             $table->string('thumbnail');
             $table->text('options');
+            $table->dateTime('restore_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

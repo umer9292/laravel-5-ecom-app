@@ -7,11 +7,9 @@
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h2 class="h2">Trashed Profiles List</h2>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('admin.profile.create') }}" class="btn btn-sm btn-outline-secondary">
-                Add User
-            </a>
-        </div>
+        <h4>
+            Total Trashed: <strong>{{ count($profiles) }}</strong>
+        </h4>
     </div>
     <div class="row">
         <div class="col-sm-12">
@@ -22,7 +20,7 @@
         <table class="table table-striped table-sm">
             <thead>
             <tr>
-                <th>#</th>
+                <th>S.No</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Slug</th>
@@ -30,14 +28,14 @@
                 <th>Address</th>
                 <th>Thumbnail</th>
                 <th>Trashed At</th>
-                <th>Actions</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody>
             @if(isset($profiles) && $profiles->count() > 0)
                 @foreach($profiles as $profile)
                     <tr>
-                        <td>{{$loop->iteration}}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $profile->name }}</td>
                         <td>{{ $profile->user->email }}</td>
                         <td>{{ $profile->slug }}</td>
@@ -46,23 +44,15 @@
                         <td>
                             <img src="{{ asset('storage/'.$profile->thumbnail ) }}" class="img-responsive" alt="No Profile Image" height="50" width="50">
                         </td>
-                        <td>{{\Carbon\Carbon::parse($profile->deleted_at)->diffForHumans() }}</td>
+                        <td>{{ diff4Human($profile->deleted_at) }}</td>
                         <td>
-                            <a href="{{ route('admin.profile.recover', $profile->slug) }}" class="btn btn-sm btn-primary"> Recover </a>
-                            |
-                            <a href="javascript:;" onclick="confirmDelete('{{ $profile->slug }}')" class="btn btn-sm btn-danger">
-                                Delete
+                            <a href="{{ route('admin.profile.recover', $profile->slug) }}"
+                               class="btn btn-sm btn-outline-primary"
+                            >
+                                <i class="fas fa-trash-restore-alt"></i>
+                                Restore
                             </a>
 
-                            <form
-                                id="delete-product-{{ $profile->slug }}"
-                                action="{{ route('admin.profile.destroy', $profile->slug) }}"
-                                method="POST"
-                                style="display: none;"
-                            >
-                                @method('DELETE')
-                                @csrf
-                            </form>
                         </td>
                     </tr>
                 @endforeach

@@ -6,33 +6,13 @@
 @endsection
 @section('content')
     <h2 class="modal-title">Add Product</h2>
+    <div class="row">
+        <div class="col-sm-12">
+            @include('admin.partials.message')
+        </div>
+    </div>
     <form action="{{ route('admin.product.store') }}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
         <div class="row">
-            <div class="col-sm-12">
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-            </div>
-            <div class="col-sm-12">
-                @if (session()->has('message'))
-                    <div class="alert alert-success">
-                        {{ session('message') }}
-                    </div>
-                @endif
-            </div>
-            <div class="col-sm-12">
-                @if (session()->has('error'))
-                    <div class="alert alert-danger">
-                        {{ session('error') }}
-                    </div>
-                @endif
-            </div>
             @csrf
             <div class="col-lg-9">
                 <div class="form-group row">
@@ -102,7 +82,7 @@
                     </li>
                     <li class="list-group-item active"><h5>Featured Image</h5></li>
                     <li class="list-group-item">
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div>
                                 <input type="file" name="thumbnail" id="thumbnail" class="custom-file-input">
                                 <label for="thumbnail" class="custom-file-label">Choose file</label>
@@ -114,13 +94,13 @@
                     </li>
                     <li class="list-group-item">
                         <div class="col-12">
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                <span class="input-group-text" id="featured">
-                                    <input type="checkbox" name="featured" value="@if(isset($product)){{$product->featuerd}}@else{{0}}@endif">
-                                </span>
+                            <div class="input-group">
+                                <div class="form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="1" name="featured">
+                                    <label class="form-check-label ml-2" for="featured">
+                                        Featured Product
+                                    </label>
                                 </div>
-                                <input type="text" class="form-control" name="featured" placeholder="0.00" aria-label="featured" aria-describedby="featured">
                             </div>
                         </div>
                     </li>
@@ -173,14 +153,13 @@
                })
             });
 
-            $('#btn-add').on('click', function (e) {
-                // var count = $('.options').length+1;
+            $('#btn-add').on('click', function () {
                 $.get("{{ route('admin.product.extras') }}").done(function (data) {
                     $('#extras').append(data);
                 })
             });
 
-            $('#btn-remove').on('click', function (e) {
+            $('#btn-remove').on('click', function () {
                if ($('.options').length > 0) {
                    $('.options:last').remove();
                }

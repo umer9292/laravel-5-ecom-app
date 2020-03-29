@@ -18,6 +18,7 @@ class CreateCategoriesTable extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('slug');
+            $table->dateTime('restore_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

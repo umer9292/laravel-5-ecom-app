@@ -8,23 +8,14 @@
         <h2 class="h2">Products List</h2>
         <div class="btn-toolbar mb-2 mb-md-0">
             <a href="{{ route('admin.product.create') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-plus"></i>
                 Add Product
             </a>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-12">
-            @if (session()->has('message'))
-                <div class="alert alert-success">
-                    {{ session('message') }}
-                </div>
-            @endif
-
-            @if (session()->has('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
+            @include('admin.partials.message')
         </div>
     </div>
     <div class="table-responsive">
@@ -65,25 +56,31 @@
                         <td>
                             <img src="{{ asset('storage/'. $product->thumbnail) }}" class="img-responsive" alt="{{ $product->title }}" width="70" height="50">
                         </td>
-                        <td>{{ $product->created_at }}</td>
                         <td>
-                            <a href="{{ route('admin.product.edit', $product) }}" class="btn btn-sm btn-info"> Edit </a>
-                            |
-                            <a href="{{ route('admin.product.remove', $product) }}" class="btn btn-sm btn-warning"> Trash </a>
-                            |
-                            <a href="javascript:;" onclick="confirmDelete('{{ $product->slug }}')" class="btn btn-sm btn-danger">
-                                Delete
-                            </a>
+                            {{ diff4Human( $product->created_at ) }}
+                            @if($product->restore_at)  (Restore: {{ diff4Human($product->restore_at) }}) @endif
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <a
+                                    href="{{ route('admin.product.edit', $product) }}"
+                                    class="btn btn-sm btn-success tool-tip"
+                                    data-toggle="tooltip" data-placement="top" title="Edit Product"
+                                >
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                </a>
 
-                            <form
-                                id="delete-product-{{ $product->slug }}"
-                                action="{{ route('admin.product.destroy', $product->slug) }}"
-                                method="POST"
-                                style="display: none;"
-                            >
-                                @method('DELETE')
-                                @csrf
-                            </form>
+                                <a href="{{ route('admin.product.remove', $product) }}"
+                                   class="btn btn-sm btn-secondary mx-1 tool-tip"
+                                    data-toggle="tooltip" data-placement="top" title="Trash Product">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </a>
+
+                                {!! Form::open(['route' =>  ['admin.product.destroy', $product], 'method' => 'POST']) !!}
+                                    @method('DELETE')
+                                    {{ Form::button('<i class="fas fa-trash-alt"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-sm']) }}
+                                {!! Form::close() !!}
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -107,11 +104,6 @@
 @endsection
 @section('scripts')
     <script type="text/javascript">
-        function confirmDelete(id) {
-            let choice = confirm("Are You Sure, You want to Delete this record ?");
-            if(choice) {
-                document.getElementById('delete-product-'+id).submit();
-            }
-        }
+        $('.tool-tip').tooltip();
     </script>
 @endsection

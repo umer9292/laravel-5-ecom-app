@@ -7,11 +7,9 @@
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h2 class="h2">Trashed List</h2>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('admin.category.create') }}" class="btn btn-sm btn-outline-secondary">
-                Add Category
-            </a>
-        </div>
+        <h4 class="">
+            Total Trashed : {{ count($categories) }}
+        </h4>
     </div>
     <div class="row">
         <div class="col-sm-12">
@@ -27,7 +25,7 @@
                 <th>Description</th>
                 <th>Slug</th>
                 <th>Categories</th>
-                <th>Deleted At</th>
+                <th>Trashed At</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -51,16 +49,10 @@
                         <td>{{ diff4Human($category->deleted_at) }}</td>
                         <td>
                             <div class="btn-group" role="group" aria-label="example">
-                                <a href="{{ route('admin.category.recover', $category) }}" class="btn btn-sm btn-primary mr-1">
+                                <a href="{{ route('admin.category.recover', $category) }}" class="btn btn-sm btn-outline-primary mr-1">
                                     <i class="fas fa-trash-restore"></i>
-                                    Recover
+                                    Restore
                                 </a>
-                                |
-                                {!! Form::open(['route' =>  ['admin.category.destroy', $category], 'method' => 'POST']) !!}
-                                    @csrf
-                                    @method('DELETE')
-                                    {{ Form::button('<i class="fas fa-trash-alt"></i> Delete', ['type' => 'submit', 'class' => 'btn btn-danger btn-sm ml-1']) }}
-                                {!! Form::close() !!}
                             </div>
                         </td>
                     </tr>

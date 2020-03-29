@@ -7,49 +7,33 @@
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h2 class="h2">Trashed List</h2>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('admin.product.create') }}" class="btn btn-sm btn-outline-secondary">
-                Add Product
-            </a>
-        </div>
+        <h4>Total Trashed: {{ count($products) }}</h4>
     </div>
     <div class="row">
         <div class="col-sm-12">
-            @if (session()->has('message'))
-                <div class="alert alert-success">
-                    {{ session('message') }}
-                </div>
-            @endif
-
-            @if (session()->has('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
+            @include('admin.partials.message')
         </div>
     </div>
     <div class="table-responsive">
         <table class="table table-striped table-sm">
             <thead>
             <tr>
-                <th>#</th>
+                <th>S.No</th>
                 <th>Title</th>
                 <th>Description</th>
                 <th>Slug</th>
                 <th>Categories</th>
                 <th>Price</th>
                 <th>Thumbnail</th>
-                <th>Deleted At</th>
+                <th>Trashed At</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             @if(count($products) > 0)
-                @php $count = null  @endphp
                 @foreach($products as $product)
-                    @php $count++  @endphp
                     <tr>
-                        <td>{{ $count }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $product->title }}</td>
                         <td>{!! $product->description !!}</td>
                         <td>{{ $product->slug }}</td>
@@ -66,23 +50,15 @@
                         <td>
                             <img src="{{ asset('storage/'. $product->thumbnail) }}" class="img-responsive" alt="{{ $product->title }}" height="50">
                         </td>
-                        <td>{{ $product->deleted_at }}</td>
+                        <td>{{ diff4Human($product->deleted_at) }}</td>
                         <td>
-                            <a href="{{ route('admin.product.recover', $product) }}" class="btn btn-sm btn-primary"> Restore </a>
-                            |
-                            <a href="javascript:;" onclick="confirmDelete('{{ $product->slug }}')" class="btn btn-sm btn-danger">
-                                Delete
-                            </a>
-
-                            <form
-                                id="delete-product-{{ $product->slug }}"
-                                action="{{ route('admin.product.destroy', $product->slug) }}"
-                                method="POST"
-                                style="display: none;"
+                            <a
+                                href="{{ route('admin.product.recover', $product) }}"
+                               class="btn btn-sm btn-outline-primary"
                             >
-                                @method('DELETE')
-                                @csrf
-                            </form>
+                                <i class="fas fa-trash-restore-alt"></i>
+                                Restore
+                            </a>
                         </td>
                     </tr>
                 @endforeach

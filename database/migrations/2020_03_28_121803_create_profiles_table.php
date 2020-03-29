@@ -20,7 +20,11 @@ class CreateProfilesTable extends Migration
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('slug')->nullable();
-            $table->string('thumbnail')->nullable();
+            $table->string('thumbnail');
+            $table->unsignedInteger('country_id');
+            $table->unsignedInteger('state_id');
+            $table->unsignedInteger('city_id');
+            $table->dateTime('restore_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

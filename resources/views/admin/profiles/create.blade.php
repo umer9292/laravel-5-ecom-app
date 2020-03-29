@@ -1,12 +1,16 @@
 @extends('admin.app')
 @section('breadcrumbs')
     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-    <li class="breadcrumb-item"><a href="{{ route('admin.profile.index') }}">Users</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Add User</li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.profile.index') }}">Profiles</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Add Profiles</li>
 @endsection
 @section('content')
-    <h2 class="modal-title">Add User</h2>
-    @include('admin.partials.message')
+    <h2 class="modal-title">Add Profiles</h2>
+    <div class="row">
+        <div class="col-sm-12">
+            @include('admin.partials.message')
+        </div>
+    </div>
     <form action="{{ route('admin.profile.store') }}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
         <div class="row">
             @csrf
@@ -106,19 +110,15 @@
                         </div>
                         <div class="img-thumbnail text-center mt-2">
                             <img
-                                src="@if(isset($users))
-                                        {{ asset('storage/profile/'. $users->profile->thumbnail) }}
-                                    @else
-                                        {{ asset('storage/images/profile/no-thumbnail.jpeg') }}
-                                    @endif"
-                                id="imgthumbnail" class="img-fluid" alt="" height="100" width="150"
+                                src="{{ asset('storage/images/profile/no-thumbnail.jpeg') }}"
+                                id="show-thumbnail" class="img-fluid" alt="" height="100" width="150"
                             >
                         </div>
                     </li>
                     <li class="list-group-item">
                         <div class="form-group row">
                             <div class="col-lg-12">
-                                <input type="submit" name="submit" class="btn btn-primary btn-block" value="Add User">
+                                <input type="submit" name="submit" class="btn btn-primary btn-block" value="Add Profile">
                             </div>
                         </div>
                     </li>
@@ -129,64 +129,5 @@
 @endsection
 
 @section('scripts')
-    <script type="text/javascript">
-        $(function () {
-            const  stateSelector = $('#states');
-            const  countrySelector =  $('#countries');
-            const  citySelector =  $('#cities');
-
-            $('.role').select2();
-            countrySelector.select2();
-            citySelector.select2();
-            stateSelector.select2();
-
-            $('#textUrl').on('keyup', function () {
-               var pretty_url = slugify($(this).val());
-               $('#url').html(slugify(pretty_url));
-               $('#slug').val(pretty_url);
-            });
-
-            $('#thumbnail').on('change', function () {
-               var file = $(this).get(0).files;
-               var reader = new FileReader();
-               reader.readAsDataURL(file[0]);
-               reader.addEventListener("load", function (e) {
-                   var image = e.target.result;
-                   $('#imgthumbnail').attr('src', image);
-               })
-            });
-
-            // On Country Change
-            countrySelector.on('change', function () {
-                const  id = $(this).select2('data')[0].id;
-                $.ajax({
-                    type: 'GET',
-                    url: "{{ route('admin.profile.states') }}/" + id
-                }).then(function (data) {
-                    let options = '<option selected hidden>Select State</option>';
-                    for (i=0; i<data.length; i++) {
-                        const { name, id } =  data[i];
-                        options += `<option value="${id}" >${name}</option>`;
-                    }
-                    stateSelector.html(options)
-                });
-            });
-
-            // On State Change
-            stateSelector.on('change', function () {
-                const  id = $(this).select2('data')[0].id;
-                $.ajax({
-                    type: 'GET',
-                    url: "{{ route('admin.profile.cities') }}/" + id
-                }).then(function (data) {
-                    let options = '<option selected hidden>Select City</option>';
-                    for (i=0; i<data.length; i++) {
-                        const { name, id } =  data[i];
-                        options += `<option value="${id}" >${name}</option>`;
-                    }
-                    citySelector.html(options)
-                });
-            });
-        })
-    </script>
+    <script type="text/javascript" src="{{ asset('assets/js/main.js') }}"> </script>
 @endsection

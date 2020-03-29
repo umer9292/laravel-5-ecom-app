@@ -34,6 +34,10 @@ class Profile extends Model
             ->select(['id', 'email', 'role_id', 'status']);
     }
 
+    public function getUserRoles() {
+        return $this->user->role ?  $this->user->role->id : null;
+    }
+
     public function country()
     {
         return $this->belongsTo('App\Country');

@@ -8,10 +8,8 @@ use App\Profile;
 use App\Role;
 use App\State;
 use App\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreUserProfile;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
@@ -26,16 +24,16 @@ class ProfileController extends Controller
         $profiles = Profile::with( 'user')
                         ->orderByDesc('id')
                         ->paginate(5);
-        return  view('admin.users.index', compact('profiles'));
+        return  view('admin.profiles.index', compact('profiles'));
     }
 
     public function trash()
     {
         $profiles = Profile::with( 'user')
-                        ->orderByDesc('deleted_at')
+                        ->orderByDesc('id')
                         ->onlyTrashed()
                         ->paginate(5);
-        return  view('admin.users.trash', compact('profiles'));
+        return  view('admin.profiles.trash', compact('profiles'));
     }
 
     /**
@@ -47,7 +45,7 @@ class ProfileController extends Controller
     {
         $roles = Role::all();
         $countries = Country::all();
-        return  view('admin.users.create', compact('roles', 'countries'));
+        return  view('admin.profiles.create', compact('roles', 'countries', 'profile'));
     }
 
     /**
@@ -58,8 +56,9 @@ class ProfileController extends Controller
      */
     public function store(StoreUserProfile $request)
     {
+//        dd($request->all());
         try {
-            $path = 'images/profile/no-thumbnail.jpeg';
+            $path = null;
             if ($request->hasFile('thumbnail'))
             {
                 $fileName =  time().$request->thumbnail->getClientOriginalName();
@@ -117,7 +116,7 @@ class ProfileController extends Controller
 //        dd($profile);
         $roles = Role::all();
         $countries = Country::all();
-        return  view('admin.users.edit', compact('profile', 'roles', 'countries'));
+        return  view('admin.profiles.edit', compact('profile', 'roles', 'countries'));
     }
 
     /**
@@ -129,6 +128,34 @@ class ProfileController extends Controller
      */
     public function update(Request $request, Profile $profile)
     {
+        try {
+            $path = null;
+            if ($request->hasFile('thumbnail'))
+            {
+                $fileName =  time().$request->thumbnail->getClientOriginalName();
+                $path = $request->thumbnail->storeAs('images/profile', $fileName);
+                $profile->thumbnail = $path;
+            }
+
+            $userId = $profile->user_id;
+            $profile = User::where('id', $userId)->update(['status' => $request->status]);
+
+            $profile->name = $request->name;
+//            $profile->slug = $request->slug;
+            $profile->country_id = $request->country_id;
+            $profile->state_id = $request->state_id;
+            $profile->city_id = $request->city_id;
+            $profile->phone = $request->phone;
+            $saved = $profile->save();
+
+            if  ($saved) {
+                return back()->with('success', 'Profile Updated Successfully!');
+            } else {
+                return back()->with('error', 'Error Updating Profile');
+            }
+        } catch (\Exception $e){
+            dd($e->getMessage());
+        }
     }
 
 
@@ -136,7 +163,7 @@ class ProfileController extends Controller
     {
         $profile = Profile::withTrashed()->where(['slug' => $slug]);
         if ($profile->restore()) {
-            $profile->update(['restored_at' => now()->toDateTimeString()]);
+            $profile->update(['restore_at' => now()->toDateTimeString()]);
             return back()->with('success', 'Profile Successfully Restored!');
         }
         else
