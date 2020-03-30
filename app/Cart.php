@@ -27,10 +27,54 @@ class Cart
         }
 
         $products['qty'] += $qty;
-        $products['price'] += $product->price *  $products['qty'];
+        $products['price'] = $product->price *  $products['qty'];
         $this->contents[$product->slug] = $products;
         $this->totalQty += $qty;
         $this->totalPrice += $product->price;
+    }
 
+    public function removeProduct($product)
+    {
+        if ($this->contents) {
+            if (array_key_exists($product->slug, $this->contents)) {
+                $rProducts = $this->contents[$product->slug];
+                $this->totalQty -= $rProducts['qty'];
+                $this->totalPrice -= $rProducts['price'];
+                array_forget($this->contents, $product->slug);
+            }
+        }
+    }
+
+    public function updateProduct($product, $qty)
+    {
+        if ($this->contents) {
+            if (array_key_exists($product->slug, $this->contents)) {
+                $products = $this->contents[$product->slug];
+            }
+        }
+
+        $this->totalQty -= $products['qty'];
+        $this->totalPrice -= $products['price'];
+        $products['qty'] = $qty;
+        $products['price'] = $product->price *  $products['qty'];
+        $this->totalPrice += $products['price'];
+        $this->totalQty += $qty;
+//        $this->totalPrice += $qty*$product->price;
+        $this->contents[$product->slug] = $products;
+    }
+
+    public function getContents()
+    {
+        return $this->contents;
+    }
+
+    public function getTotalQty()
+    {
+        return $this->totalQty;
+    }
+
+    public function getTotalPrice()
+    {
+        return $this->totalPrice;
     }
 }

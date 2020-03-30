@@ -44,10 +44,20 @@ Route::group(['as' => 'products.', 'prefix' => 'products'], function () {
     ]);
 });
 
-Route::group(['as' => 'category.', 'prefix' => 'category'], function () {
-    Route::get('/category', [
-        'as' => 'products',
-        'uses' => 'ProductController@products'
+Route::group(['as' => 'cart.', 'prefix' => 'cart'], function () {
+    Route::get('/', [
+        'as' => 'all',
+        'uses' => 'ProductController@cart'
+    ]);
+
+    Route::post('/remove/{product}', [
+        'as' => 'remove',
+        'uses' => 'ProductController@removeProduct'
+    ]);
+
+    Route::post('/update/{product}', [
+        'as' => 'update',
+        'uses' => 'ProductController@updateProduct'
     ]);
 });
 

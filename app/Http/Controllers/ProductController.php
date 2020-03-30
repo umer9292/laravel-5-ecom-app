@@ -116,6 +116,37 @@ class ProductController extends Controller
         return back()->with('success', "Product $product->title has been successfully added to Cart");
     }
 
+    public function cart()
+    {
+        if (!Session::has('cart')) {
+            return view('products.cart');
+        }
+
+        $cart = Session::get('cart');
+        return view('products.cart', compact('cart'));
+    }
+
+    public function removeProduct(Product $product)
+    {
+        $oldCart = Session::has('cart') ? Session::get('cart') : null ;
+        $cart = new  Cart($oldCart);
+        $cart->removeProduct($product);
+        Session::put('cart', $cart);
+        return back()->with('success', "Product $product->title has been successfully remove from the Cart");
+    }
+
+    public function updateProduct(Request $request ,Product $product)
+    {
+        $oldCart = Session::has('cart') ? Session::get('cart') : null ;
+        $cart = new  Cart($oldCart);
+        if ($request->qty > 0 )
+            $cart->updateProduct($product, $request->qty);
+        else
+            $cart->removeProduct($product);
+        Session::put('cart', $cart);
+        return back()->with('success', "Product $product->title has been successfully Updated in the Cart");
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
