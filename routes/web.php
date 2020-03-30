@@ -22,6 +22,10 @@ Route::get('/home', [
     'uses' => 'HomeController@index'
 ]);
 
+Route::get('/checkout', function (){
+    return view('products.checkout');
+});
+
 Route::group(['as' => 'products.', 'prefix' => 'products'], function () {
     Route::get('/', [
         'as' => 'all',

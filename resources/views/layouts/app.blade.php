@@ -99,6 +99,6 @@
     <script type="text/javascript">
         $('.tool-tip').tooltip();
     </script>
-
+    @yield('scripts')
 </body>
 </html>
