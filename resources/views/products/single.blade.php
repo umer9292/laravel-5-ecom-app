@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+    @include('layouts.partials.message')
     <div class="album py-5 bg-light">
         <div class="container">
             <div class="row">

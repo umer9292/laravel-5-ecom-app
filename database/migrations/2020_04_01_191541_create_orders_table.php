@@ -19,6 +19,7 @@ class CreateOrdersTable extends Migration
             $table->unsignedInteger('product_id');
             $table->unsignedInteger('qty');
             $table->string('status');
+            $table->unsignedInteger('price');
             $table->unsignedInteger('payment_id');
             $table->timestamps();
             $table->softDeletes();

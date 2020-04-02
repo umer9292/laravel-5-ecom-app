@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+    @include('layouts.partials.message')
     <div class="d-flex justify-content-between mb-3 mt-2">
     <h2>Shopping Cart Page</h2>
         <a href="{{ route('products.all') }}" class="btn btn-outline-secondary">

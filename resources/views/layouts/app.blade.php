@@ -87,7 +87,6 @@
                 @show
             </div>
             <div class="col-md-9">
-                @include('layouts.partials.message')
                 @yield('content')
             </div>
         </div>
